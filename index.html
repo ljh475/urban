@@ -1,134 +1,966 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>도시정비사업 정보 플랫폼</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>도시정비사업 인사이트</title>
+    <meta
+      name="description"
+      content="재개발, 재건축, 공사비 검증, 관련 법령을 한 화면에서 확인하는 도시정비사업 정보 플랫폼"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --surface: rgba(255, 255, 255, 0.82);
+        --surface-strong: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --line: rgba(148, 163, 184, 0.22);
+        --primary: #0f172a;
+        --accent: #1d4ed8;
+        --success: #0f766e;
+        --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        --max: 1200px;
+      }
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: sans-serif; }
+      * {
+        box-sizing: border-box;
+      }
 
-    header {
-      padding: 16px;
-      background: #111;
-      color: white;
-    }
+      html {
+        scroll-behavior: smooth;
+      }
 
-    .hero {
-      height: 70vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 40px;
-      background: #f5f5f5;
-    }
+      body {
+        margin: 0;
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(59, 130, 246, 0.1), transparent 24%),
+          radial-gradient(circle at top right, rgba(15, 23, 42, 0.08), transparent 20%),
+          linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      }
 
-    .section {
-      padding: 40px;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
+      .container {
+        width: min(calc(100% - 32px), var(--max));
+        margin: 0 auto;
+      }
 
-    .card {
-      border: 1px solid #ddd;
-      padding: 20px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(16px);
+        background: rgba(248, 250, 252, 0.82);
+        border-bottom: 1px solid var(--line);
+      }
 
-    .card:hover {
-      background: #eee;
-    }
+      .site-header__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 0;
+      }
 
-    footer {
-      padding: 20px;
-      text-align: center;
-      background: #111;
-      color: white;
-    }
-  </style>
-</head>
+      .brand small {
+        display: block;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
 
-<body>
+      .brand strong {
+        font-size: clamp(20px, 2vw, 26px);
+      }
 
-  <!-- 헤더 -->
-  <header>
-    <h1>도시정비사업</h1>
-  </header>
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-  <!-- 첫 화면 -->
-  <section class="hero">
-    <h2>정비사업을 쉽게 이해하는 플랫폼</h2>
-    <p>재개발 · 재건축 · 공사비 검증 · 법령 정리</p>
-  </section>
+      .nav a {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
 
-  <!-- 주요 메뉴 -->
-  <section class="section">
-    <h2>주요 기능</h2>
-    <div class="grid">
-      <div class="card" onclick="goPage('redevelopment')">재개발</div>
-      <div class="card" onclick="goPage('reconstruction')">재건축</div>
-      <div class="card" onclick="goPage('cost')">공사비 검증</div>
-      <div class="card" onclick="goPage('law')">법령 정리</div>
-    </div>
-  </section>
+      .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
 
-  <!-- 절차 -->
-  <section class="section">
-    <h2>사업 절차</h2>
-    <div class="grid">
-      <div class="card" onclick="showStep(1)">정비구역 지정</div>
-      <div class="card" onclick="showStep(2)">조합설립</div>
-      <div class="card" onclick="showStep(3)">사업시행인가</div>
-      <div class="card" onclick="showStep(4)">관리처분</div>
-      <div class="card" onclick="showStep(5)">착공 및 준공</div>
-    </div>
-  </section>
+      .button,
+      .panel-button,
+      .card-button {
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      }
 
-  <!-- 결과 영역 -->
-  <section class="section">
-    <h2>설명</h2>
-    <div id="content">클릭하면 내용 표시됨</div>
-  </section>
+      .button:hover,
+      .panel-button:hover,
+      .card-button:hover,
+      .nav a:hover,
+      .feature-card:hover,
+      .law-card:hover,
+      .list-card:hover,
+      .step-card:hover,
+      .resource-card:hover,
+      .summary-card:hover,
+      .faq-item:hover {
+        transform: translateY(-2px);
+      }
 
-  <!-- 푸터 -->
-  <footer>
-    © 2026 도시정비사업 플랫폼
-  </footer>
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        border-radius: 18px;
+        padding: 12px 18px;
+        font-weight: 800;
+        cursor: pointer;
+      }
 
-  <script>
-    function goPage(type) {
-      const content = document.getElementById("content");
+      .button--primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: var(--shadow);
+      }
 
-      const data = {
-        redevelopment: "재개발: 노후 주거지역 개선 사업",
-        reconstruction: "재건축: 기존 아파트 철거 후 재건설",
-        cost: "공사비 검증: 일정 기준 초과 시 검증 필수",
-        law: "법령 정리: 도시 및 주거환경정비법 기반"
+      .button--ghost {
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--text);
+        border-color: var(--line);
+      }
+
+      .hero {
+        padding: 52px 0 32px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .hero-main,
+      .hero-side,
+      .section-card,
+      .list-card,
+      .step-card,
+      .law-card,
+      .resource-card,
+      .faq-item,
+      .summary-card,
+      .feature-card {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+        border-radius: 28px;
+      }
+
+      .hero-main {
+        padding: 34px;
+      }
+
+      .hero-side {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .chip {
+        display: inline-flex;
+        padding: 8px 14px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--muted);
+      }
+
+      .hero h1 {
+        margin: 18px 0 14px;
+        font-size: clamp(34px, 5.4vw, 66px);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+      }
+
+      .hero p.lead,
+      .section-title p,
+      .list-card p,
+      .law-card p,
+      .resource-card p,
+      .faq-item p,
+      .summary-card p,
+      .feature-card p,
+      #content-body,
+      #content-source {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .hero-stats,
+      .summary-grid,
+      .overview-grid,
+      .process-grid,
+      .law-grid,
+      .resource-grid,
+      .faq-grid,
+      .hero-features {
+        display: grid;
+        gap: 16px;
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 26px;
+      }
+
+      .summary-grid,
+      .overview-grid,
+      .law-grid,
+      .resource-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .process-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .faq-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-card,
+      .summary-card,
+      .feature-card,
+      .list-card,
+      .step-card,
+      .law-card,
+      .resource-card,
+      .faq-item,
+      .section-card {
+        padding: 22px;
+      }
+
+      .stat-card {
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+      }
+
+      .stat-card .label {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .stat-card .value {
+        font-size: clamp(22px, 3vw, 32px);
+        font-weight: 900;
+        margin-top: 6px;
+      }
+
+      .stat-card .meta {
+        margin-top: 6px;
+        color: var(--success);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .side-panel {
+        background: linear-gradient(145deg, #0f172a, #1e293b);
+        color: white;
+        border-radius: 24px;
+        padding: 24px;
+      }
+
+      .side-panel p {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .side-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .card-button {
+        width: 100%;
+        text-align: left;
+        color: inherit;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 14px 16px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      main {
+        padding: 18px 0 72px;
+      }
+
+      section.content-section {
+        margin-top: 44px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .section-title small,
+      .summary-card small,
+      .law-card small,
+      .resource-card small,
+      .feature-card small,
+      .list-card small,
+      .step-card small {
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: #64748b;
+        margin-bottom: 8px;
+      }
+
+      .section-title h2,
+      #content-title {
+        font-size: clamp(28px, 4vw, 42px);
+        line-height: 1.1;
+        margin: 0;
+      }
+
+      .step-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .step-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: rgba(226, 232, 240, 0.46);
+        border-radius: 18px;
+        padding: 12px 14px;
+      }
+
+      .step-item strong {
+        flex: 0 0 28px;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: var(--primary);
+        color: white;
+        font-size: 12px;
+      }
+
+      .step-item span {
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .cost-grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 16px;
+      }
+
+      .cost-highlight {
+        background: linear-gradient(160deg, #0f172a, #1e293b);
+        color: white;
+        border-radius: 28px;
+        padding: 24px;
+      }
+
+      .cost-highlight p,
+      .cost-highlight li {
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .bar-chart {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .bar-head {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #475569;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .bar-track {
+        height: 12px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #1d4ed8, #0f172a);
+      }
+
+      .law-badge {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        background: #dbeafe;
+        color: #1d4ed8;
+        margin-bottom: 12px;
+      }
+
+      .interactive-panel {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 18px;
+      }
+
+      .panel-menu {
+        display: grid;
+        gap: 12px;
+      }
+
+      .panel-button {
+        width: 100%;
+        text-align: left;
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 20px;
+        padding: 16px 18px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .panel-button strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      .panel-button span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .panel-button.active {
+        border-color: rgba(29, 78, 216, 0.4);
+        box-shadow: 0 12px 26px rgba(29, 78, 216, 0.1);
+      }
+
+      .content-panel {
+        min-height: 320px;
+      }
+
+      footer {
+        margin-top: 70px;
+        border-top: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.74);
+      }
+
+      .footer-inner {
+        padding: 30px 0 50px;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 16px;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      @media (max-width: 1080px) {
+        .hero-grid,
+        .cost-grid,
+        .interactive-panel,
+        .faq-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-grid,
+        .overview-grid,
+        .process-grid,
+        .law-grid,
+        .resource-grid,
+        .hero-stats,
+        .hero-features {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .summary-grid,
+        .overview-grid,
+        .process-grid,
+        .law-grid,
+        .resource-grid,
+        .hero-stats,
+        .hero-features,
+        .faq-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .site-header__inner {
+          flex-wrap: wrap;
+          align-items: flex-start;
+        }
+
+        .nav {
+          order: 3;
+          width: 100%;
+          justify-content: flex-start;
+          overflow-x: auto;
+          white-space: nowrap;
+          padding-bottom: 4px;
+        }
+
+        .section-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <div class="brand">
+          <small>Urban Renewal Platform</small>
+          <strong>도시정비사업 인사이트</strong>
+        </div>
+        <nav class="nav" aria-label="주요 메뉴">
+          <a href="#overview">정비사업 개요</a>
+          <a href="#process">사업 절차</a>
+          <a href="#cost">공사비 검증</a>
+          <a href="#law">관련 법령</a>
+          <a href="#resources">실무 자료실</a>
+          <a href="#interactive">빠른 안내</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="header-actions">
+          <a class="button button--ghost" href="#interactive">핵심 요약</a>
+          <a class="button button--primary" href="#law">법령 보기</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container hero-grid">
+        <article class="hero-main">
+          <span class="chip">재개발 · 재건축 · 공사비 검증 · 법령 정리 통합</span>
+          <h1>도시정비사업 정보를<br />더 쉽게, 더 실무적으로</h1>
+          <p class="lead">
+            현재 저장된 화면 구조를 바탕으로 전체 레이아웃을 재정리하고, 정비사업 흐름·검증 기준·법령 포인트를
+            한 화면에서 빠르게 찾을 수 있게 다시 설계했습니다.
+          </p>
+          <div class="hero-actions">
+            <a class="button button--primary" href="#process">절차 바로 보기</a>
+            <a class="button button--ghost" href="#cost">공사비 검증 보기</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-card">
+              <div class="label">핵심 절차</div>
+              <div class="value">7단계</div>
+              <div class="meta">재개발 · 재건축 흐름 정리</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">검증 트리거</div>
+              <div class="value">3유형</div>
+              <div class="meta">증액·요청·재검증 대응</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">주요 법령군</div>
+              <div class="value">4축</div>
+              <div class="meta">법 · 시행령 · 시행규칙 · 기준</div>
+            </div>
+          </div>
+        </article>
+
+        <aside class="hero-side">
+          <div class="side-panel">
+            <div class="law-badge">실무 빠른 안내</div>
+            <h2>무엇을 찾고 있나요?</h2>
+            <p>아래 버튼을 누르면 우측 설명 패널이 바로 바뀌도록 구성했습니다.</p>
+            <div class="side-list">
+              <button class="card-button" data-target="redevelopment">재개발 절차가 궁금해요</button>
+              <button class="card-button" data-target="reconstruction">재건축 절차가 궁금해요</button>
+              <button class="card-button" data-target="verification">공사비 검증 기준을 보고 싶어요</button>
+              <button class="card-button" data-target="law">법령 핵심을 빠르게 보고 싶어요</button>
+            </div>
+          </div>
+          <div class="hero-features">
+            <article class="feature-card">
+              <small>구조</small>
+              <h3>정비사업 구조</h3>
+              <p>사업 유형, 주요 용어, 핵심 목적을 카드형으로 정리</p>
+            </article>
+            <article class="feature-card">
+              <small>절차</small>
+              <h3>단계별 진행</h3>
+              <p>각 단계 클릭 전에도 전체 흐름을 한눈에 파악 가능</p>
+            </article>
+            <article class="feature-card">
+              <small>검증</small>
+              <h3>공사비 검증</h3>
+              <p>언제 검증을 신청해야 하는지 기준 중심으로 정리</p>
+            </article>
+            <article class="feature-card">
+              <small>법령</small>
+              <h3>법령 포인트</h3>
+              <p>실무에서 자주 찾는 조문 주제를 빠르게 이동</p>
+            </article>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <main>
+      <div class="container">
+        <section class="content-section">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Summary</small>
+              <h2>한눈에 보는 핵심 요약</h2>
+              <p>기존 카드형 구조를 유지하면서 정보 밀도와 가독성을 같이 올렸습니다.</p>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <article class="summary-card">
+              <small>기반 구조</small>
+              <h3>카드형 레이아웃 유지</h3>
+              <p>섹션별 카드 구조를 유지하되, 시각 우선순위와 정보 흐름을 재배치했습니다.</p>
+            </article>
+            <article class="summary-card">
+              <small>UX 개선</small>
+              <h3>모바일 대응 강화</h3>
+              <p>헤더, 카드, 설명 패널이 작은 화면에서도 자연스럽게 세로 스택으로 전환됩니다.</p>
+            </article>
+            <article class="summary-card">
+              <small>실무 초점</small>
+              <h3>공사비·법령 중심 재구성</h3>
+              <p>정비사업 절차뿐 아니라 공사비 검증과 관련 법령을 핵심 메뉴로 올렸습니다.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="overview">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Overview</small>
+              <h2>정비사업 개요</h2>
+              <p>정비사업은 도시기능 회복과 주거환경 개선을 위해 정비구역 안에서 기반시설을 정비하거나 주택 등을 개량·건설하는 사업입니다.</p>
+            </div>
+          </div>
+          <div class="overview-grid">
+            <article class="list-card">
+              <small>정의</small>
+              <h3>정비사업이란</h3>
+              <p>주거환경개선사업, 재개발사업, 재건축사업을 포함하는 상위 개념입니다.</p>
+            </article>
+            <article class="list-card">
+              <small>유형</small>
+              <h3>재개발 · 재건축 차이</h3>
+              <p>재개발은 기반시설이 열악한 지역의 개선, 재건축은 양호한 기반시설 아래 노후 공동주택 정비에 초점이 있습니다.</p>
+            </article>
+            <article class="list-card">
+              <small>용어</small>
+              <h3>실무 핵심 용어</h3>
+              <p>정비구역, 사업시행자, 토지등소유자, 관리처분계획 같은 기본 용어를 중심으로 학습할 수 있게 구성했습니다.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="process">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Process</small>
+              <h2>사업 절차</h2>
+              <p>재개발·재건축·소규모정비사업 절차를 각각 독립 카드로 분리했습니다.</p>
+            </div>
+          </div>
+          <div class="process-grid">
+            <article class="step-card">
+              <small>Redevelopment</small>
+              <h3>재개발 절차</h3>
+              <div class="step-list">
+                <div class="step-item"><strong>1</strong><span>정비구역 지정</span></div>
+                <div class="step-item"><strong>2</strong><span>추진위원회 승인</span></div>
+                <div class="step-item"><strong>3</strong><span>조합설립인가</span></div>
+                <div class="step-item"><strong>4</strong><span>사업시행인가</span></div>
+                <div class="step-item"><strong>5</strong><span>관리처분계획인가</span></div>
+                <div class="step-item"><strong>6</strong><span>착공 · 준공 · 이전고시</span></div>
+              </div>
+            </article>
+            <article class="step-card">
+              <small>Reconstruction</small>
+              <h3>재건축 절차</h3>
+              <div class="step-list">
+                <div class="step-item"><strong>1</strong><span>기본계획 반영</span></div>
+                <div class="step-item"><strong>2</strong><span>재건축진단</span></div>
+                <div class="step-item"><strong>3</strong><span>정비구역 지정</span></div>
+                <div class="step-item"><strong>4</strong><span>조합설립인가</span></div>
+                <div class="step-item"><strong>5</strong><span>사업시행인가</span></div>
+                <div class="step-item"><strong>6</strong><span>관리처분계획인가</span></div>
+                <div class="step-item"><strong>7</strong><span>이주 · 철거 · 착공</span></div>
+              </div>
+            </article>
+            <article class="step-card">
+              <small>Small-scale Project</small>
+              <h3>소규모정비사업</h3>
+              <div class="step-list">
+                <div class="step-item"><strong>1</strong><span>사업대상 검토</span></div>
+                <div class="step-item"><strong>2</strong><span>주민합의</span></div>
+                <div class="step-item"><strong>3</strong><span>사업시행계획 수립</span></div>
+                <div class="step-item"><strong>4</strong><span>인가 · 신고</span></div>
+                <div class="step-item"><strong>5</strong><span>공사 시행</span></div>
+                <div class="step-item"><strong>6</strong><span>준공 및 정산</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="cost">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Cost Verification</small>
+              <h2>공사비 검증</h2>
+              <p>언제 검증 대상이 되는지, 어떤 서류를 내야 하는지, 처리기간이 어떻게 되는지를 실무형으로 배치했습니다.</p>
+            </div>
+          </div>
+          <div class="cost-grid">
+            <div>
+              <article class="cost-highlight">
+                <div class="law-badge">핵심 포인트</div>
+                <h3>검증 요청이 필요한 대표 상황</h3>
+                <ul>
+                  <li>토지등소유자 또는 조합원 5분의 1 이상이 검증을 요청한 경우</li>
+                  <li>사업시행계획인가 전 선정은 누적 증액 10% 이상인 경우</li>
+                  <li>사업시행계획인가 후 선정은 누적 증액 5% 이상인 경우</li>
+                  <li>기존 검증 이후 추가 누적 증액이 3% 이상이면 재검증 가능</li>
+                </ul>
+              </article>
+              <article class="section-card" style="margin-top:16px;">
+                <small>제출 서류</small>
+                <h3>검증 신청 시 준비자료</h3>
+                <p>사업개요, 인허가 서류, 입찰 공고문, 공사도급계약서, 산출내역서, 변동사유서, 총괄표, 세부내역서, 설계도면 등을 준비해야 합니다.</p>
+              </article>
+            </div>
+            <article class="section-card">
+              <small>Trend View</small>
+              <h3>공사비 이슈 체감도 예시</h3>
+              <p>실데이터가 아니라 화면 구조용 예시 인덱스입니다.</p>
+              <div class="bar-chart">
+                <div><div class="bar-head"><span>2022</span><span>58</span></div><div class="bar-track"><div class="bar-fill" style="width:58%"></div></div></div>
+                <div><div class="bar-head"><span>2023</span><span>68</span></div><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div></div>
+                <div><div class="bar-head"><span>2024</span><span>81</span></div><div class="bar-track"><div class="bar-fill" style="width:81%"></div></div></div>
+                <div><div class="bar-head"><span>2025</span><span>86</span></div><div class="bar-track"><div class="bar-fill" style="width:86%"></div></div></div>
+                <div><div class="bar-head"><span>2026</span><span>92</span></div><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="law">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Law & Regulation</small>
+              <h2>관련 법령</h2>
+              <p>사이트의 핵심 법령군을 카드형으로 고정 배치해 학습용과 실무용 탐색을 동시에 고려했습니다.</p>
+            </div>
+          </div>
+          <div class="law-grid">
+            <article class="law-card"><div class="law-badge">법</div><h3>도시 및 주거환경정비법</h3><p>정비사업, 정비구역, 토지등소유자, 재건축진단 등 기본 틀을 정하는 상위 법입니다.</p></article>
+            <article class="law-card"><div class="law-badge">시행령</div><h3>도시정비법 시행령</h3><p>정비계획 입안, 주택규모, 재건축진단 세부 기준, 경미한 변경 범위 등 실무 세부사항을 규정합니다.</p></article>
+            <article class="law-card"><div class="law-badge">시행규칙</div><h3>도시정비법 시행규칙</h3><p>각종 신청서식, 제출서류, 보고 절차, 합동설명회 등 행정 실행 단계에 가까운 내용을 담고 있습니다.</p></article>
+            <article class="law-card"><div class="law-badge">기준</div><h3>정비사업 공사비 검증 기준</h3><p>검증 대상, 신청시기, 제출서류, 처리기간, 검증 기준시점, 결과 공개 등을 별도로 정합니다.</p></article>
+            <article class="law-card"><div class="law-badge">실무</div><h3>자주 찾는 키워드</h3><p>정비구역 지정, 조합설립인가, 사업시행계획인가, 관리처분계획인가, 공사비 증액, 검증신청.</p></article>
+            <article class="law-card"><div class="law-badge">학습</div><h3>개정 포인트 정리</h3><p>재건축진단 체계, 정비계획 입안 요청, 공사비 검증 기준을 별도 섹션으로 빠르게 점검할 수 있게 배치했습니다.</p></article>
+          </div>
+        </section>
+
+        <section class="content-section" id="resources">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Resources</small>
+              <h2>실무 자료실</h2>
+              <p>향후 PDF, 보고서 양식, 체크리스트를 붙이기 쉬운 카드형 보관함 구조입니다.</p>
+            </div>
+          </div>
+          <div class="resource-grid">
+            <article class="resource-card"><small>Checklist</small><h3>단계별 체크리스트</h3><p>정비구역 지정부터 준공까지 단계별 확인사항을 추가할 수 있는 자리입니다.</p></article>
+            <article class="resource-card"><small>Template</small><h3>보고서 양식</h3><p>공사비 검증 보고서, 회의자료, 사업 절차 설명서 같은 실무 문서를 연결하기 좋게 만들었습니다.</p></article>
+            <article class="resource-card"><small>Archive</small><h3>법령 PDF 정리</h3><p>법, 시행령, 시행규칙, 검증 기준 PDF를 추후 다운로드 링크로 연결할 수 있습니다.</p></article>
+          </div>
+        </section>
+
+        <section class="content-section" id="interactive">
+          <div class="section-head">
+            <div class="section-title">
+              <small>Interactive Guide</small>
+              <h2>빠른 안내 패널</h2>
+              <p>핵심 상황별 설명이 구조적으로 바뀌도록 만들었습니다.</p>
+            </div>
+          </div>
+          <div class="interactive-panel">
+            <div class="panel-menu">
+              <button class="panel-button active" data-panel="redevelopment"><strong>재개발</strong><span>기반시설이 열악한 지역의 주거환경·도시환경 개선</span></button>
+              <button class="panel-button" data-panel="reconstruction"><strong>재건축</strong><span>양호한 기반시설 아래 노후 공동주택 정비</span></button>
+              <button class="panel-button" data-panel="verification"><strong>공사비 검증</strong><span>증액 기준과 신청시기 중심 요약</span></button>
+              <button class="panel-button" data-panel="law"><strong>관련 법령</strong><span>법 · 시행령 · 시행규칙 · 검증 기준 연결</span></button>
+            </div>
+            <article class="section-card content-panel">
+              <div class="law-badge" id="content-label">재개발 요약</div>
+              <h3 id="content-title">재개발</h3>
+              <div id="content-body">정비기반시설이 열악하고 노후·불량건축물이 밀집한 지역에서 주거환경을 개선하거나 도시기능을 회복하기 위한 사업입니다. 정비구역 지정과 조합 단계에서 절차·동의·비용구조를 같이 봐야 정리가 잘 됩니다.</div>
+              <div id="content-source" style="margin-top:12px;">실무 포인트: 구역 지정, 조합설립, 사업시행인가 순으로 큰 흐름을 먼저 잡는 것이 좋습니다.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="faq">
+          <div class="section-head">
+            <div class="section-title">
+              <small>FAQ</small>
+              <h2>자주 묻는 질문</h2>
+              <p>첫 화면만 보고도 바로 답을 찾을 수 있도록 자주 찾는 질문을 카드로 배치했습니다.</p>
+            </div>
+          </div>
+          <div class="faq-grid">
+            <article class="faq-item"><h3>재개발과 재건축의 가장 큰 차이는 무엇인가요?</h3><p>재개발은 기반시설이 열악한 지역 전체의 환경 개선, 재건축은 노후 공동주택의 재건설에 중심이 있습니다.</p></article>
+            <article class="faq-item"><h3>공사비 검증은 언제 필요한가요?</h3><p>요청 요건, 누적 증액 기준, 재검증 기준 중 하나에 해당하면 검증 절차를 검토해야 합니다.</p></article>
+            <article class="faq-item"><h3>법령은 어디서 빠르게 확인할 수 있나요?</h3><p>법, 시행령, 시행규칙, 공사비 검증 기준을 분리해서 보는 것이 가장 빠릅니다.</p></article>
+            <article class="faq-item"><h3>이 구조는 나중에 확장 가능한가요?</h3><p>가능합니다. 데이터 연동, PDF 링크, 지역별 사업현황 카드, 검색 기능을 이어 붙이기 좋게 짰습니다.</p></article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <div>
+          <strong>도시정비사업 인사이트</strong>
+          <p>정비사업 흐름, 공사비 검증, 법령 포인트를 실무형으로 정리하는 정보 페이지</p>
+        </div>
+        <div class="footer-links">
+          <a href="#overview">개요</a>
+          <a href="#process">절차</a>
+          <a href="#cost">공사비 검증</a>
+          <a href="#law">법령</a>
+          <a href="#resources">자료실</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const panelData = {
+        redevelopment: {
+          label: '재개발 요약',
+          title: '재개발',
+          body: '정비기반시설이 열악하고 노후·불량건축물이 밀집한 지역에서 주거환경을 개선하거나 도시기능을 회복하기 위한 사업입니다. 정비구역 지정과 조합 단계에서 절차·동의·비용구조를 같이 봐야 정리가 잘 됩니다.',
+          source: '실무 포인트: 구역 지정, 조합설립, 사업시행인가 순으로 큰 흐름을 먼저 잡는 것이 좋습니다.'
+        },
+        reconstruction: {
+          label: '재건축 요약',
+          title: '재건축',
+          body: '정비기반시설은 양호하지만 노후·불량 공동주택이 밀집한 지역에서 주거환경을 개선하기 위한 사업입니다. 재건축진단, 정비구역 지정, 조합설립, 사업시행인가 단계가 핵심입니다.',
+          source: '실무 포인트: 재건축은 재건축진단과 그 후속 절차를 같이 이해해야 전체 흐름이 보입니다.'
+        },
+        verification: {
+          label: '공사비 검증 요약',
+          title: '공사비 검증',
+          body: '조합원 5분의 1 이상 요청, 누적 증액 10% 또는 5% 이상, 기존 검증 후 추가 누적 증액 3% 이상 같은 기준에 해당하면 검증을 검토해야 합니다. 변경계약 체결 전에 신청하는 구조를 기본으로 잡는 것이 중요합니다.',
+          source: '실무 포인트: 변동 사유서, 총괄표, 세부 내역서, 설계도면 등 근거자료를 미리 정리해 두는 것이 좋습니다.'
+        },
+        law: {
+          label: '법령 요약',
+          title: '관련 법령',
+          body: '상위 법인 도시 및 주거환경정비법이 기본 틀을 정하고, 시행령은 세부 기준을, 시행규칙은 신청·보고 절차를, 공사비 검증 기준은 검증 실무를 정합니다. 네 축을 분리해서 보는 방식이 가장 이해가 빠릅니다.',
+          source: '실무 포인트: 법 → 시행령 → 시행규칙 → 개별 고시 순서로 보면 체계가 정리됩니다.'
+        }
       };
 
-      content.innerText = data[type];
-    }
+      const panelButtons = document.querySelectorAll('.panel-button');
+      const quickButtons = document.querySelectorAll('[data-target]');
+      const labelEl = document.getElementById('content-label');
+      const titleEl = document.getElementById('content-title');
+      const bodyEl = document.getElementById('content-body');
+      const sourceEl = document.getElementById('content-source');
 
-    function showStep(step) {
-      const content = document.getElementById("content");
+      function updatePanel(key) {
+        const data = panelData[key];
+        if (!data) return;
+        labelEl.textContent = data.label;
+        titleEl.textContent = data.title;
+        bodyEl.textContent = data.body;
+        sourceEl.textContent = data.source;
+        panelButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.panel === key);
+        });
+      }
 
-      const steps = {
-        1: "정비구역 지정: 계획 수립 후 구역 지정",
-        2: "조합설립: 토지등소유자 동의 필요",
-        3: "사업시행인가: 사업 본격 진행",
-        4: "관리처분: 분양 및 권리 배분",
-        5: "착공 및 준공: 공사 후 입주"
-      };
+      panelButtons.forEach((button) => {
+        button.addEventListener('click', () => updatePanel(button.dataset.panel));
+      });
 
-      content.innerText = steps[step];
-    }
-  </script>
-
-</body>
+      quickButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          updatePanel(button.dataset.target);
+          document.getElementById('interactive').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    </script>
+  </body>
 </html>
