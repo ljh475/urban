@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>도시정비사업 정보 플랫폼</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: sans-serif; }
+
+    header {
+      padding: 16px;
+      background: #111;
+      color: white;
+    }
+
+    .hero {
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px;
+      background: #f5f5f5;
+    }
+
+    .section {
+      padding: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      padding: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      background: #eee;
+    }
+
+    footer {
+      padding: 20px;
+      text-align: center;
+      background: #111;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 헤더 -->
+  <header>
+    <h1>도시정비사업</h1>
+  </header>
+
+  <!-- 첫 화면 -->
+  <section class="hero">
+    <h2>정비사업을 쉽게 이해하는 플랫폼</h2>
+    <p>재개발 · 재건축 · 공사비 검증 · 법령 정리</p>
+  </section>
+
+  <!-- 주요 메뉴 -->
+  <section class="section">
+    <h2>주요 기능</h2>
+    <div class="grid">
+      <div class="card" onclick="goPage('redevelopment')">재개발</div>
+      <div class="card" onclick="goPage('reconstruction')">재건축</div>
+      <div class="card" onclick="goPage('cost')">공사비 검증</div>
+      <div class="card" onclick="goPage('law')">법령 정리</div>
+    </div>
+  </section>
+
+  <!-- 절차 -->
+  <section class="section">
+    <h2>사업 절차</h2>
+    <div class="grid">
+      <div class="card" onclick="showStep(1)">정비구역 지정</div>
+      <div class="card" onclick="showStep(2)">조합설립</div>
+      <div class="card" onclick="showStep(3)">사업시행인가</div>
+      <div class="card" onclick="showStep(4)">관리처분</div>
+      <div class="card" onclick="showStep(5)">착공 및 준공</div>
+    </div>
+  </section>
+
+  <!-- 결과 영역 -->
+  <section class="section">
+    <h2>설명</h2>
+    <div id="content">클릭하면 내용 표시됨</div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer>
+    © 2026 도시정비사업 플랫폼
+  </footer>
+
+  <script>
+    function goPage(type) {
+      const content = document.getElementById("content");
+
+      const data = {
+        redevelopment: "재개발: 노후 주거지역 개선 사업",
+        reconstruction: "재건축: 기존 아파트 철거 후 재건설",
+        cost: "공사비 검증: 일정 기준 초과 시 검증 필수",
+        law: "법령 정리: 도시 및 주거환경정비법 기반"
+      };
+
+      content.innerText = data[type];
+    }
+
+    function showStep(step) {
+      const content = document.getElementById("content");
+
+      const steps = {
+        1: "정비구역 지정: 계획 수립 후 구역 지정",
+        2: "조합설립: 토지등소유자 동의 필요",
+        3: "사업시행인가: 사업 본격 진행",
+        4: "관리처분: 분양 및 권리 배분",
+        5: "착공 및 준공: 공사 후 입주"
+      };
+
+      content.innerText = steps[step];
+    }
+  </script>
+
+</body>
+</html>
